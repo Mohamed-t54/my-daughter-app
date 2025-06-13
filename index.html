@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -19,205 +18,143 @@
             color: #e63946;
         }
 
-        .counter {
-            font-size: 24px;
-            margin: 20px 0;
-        }
-
         .section {
-            margin: 30px 0;
-            padding: 20px;
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #e63946;
+            border-radius: 10px;
             background-color: #ffe5e5;
-            border-radius: 15px;
         }
 
-        input, textarea, button {
-            margin: 5px;
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid #ccc;
-        }
-
-        .gallery img {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            margin: 5px;
-            border-radius: 10px;
-        }
-
-        audio {
-            margin-top: 20px;
+        #appContent {
+            display: none;
         }
     </style>
 </head>
 
 <body>
-    <h1>My Daughter</h1>
-
-    <div class="counter" id="loveCounter"></div>
-
-    <div class="section">
-        <h2>💌 نوتات حب مجدولة</h2>
-        <textarea id="noteText" placeholder="اكتب رسالتك هنا..."></textarea><br>
-        <input type="datetime-local" id="noteTime">
-        <button onclick="addNote()">إضافة</button>
-        <div id="scheduledNotes"></div>
+    <div id="passwordSection">
+        <h1>Enter Password</h1>
+        <input type="password" id="passwordInput" placeholder="Enter Password">
+        <button onclick="checkPassword()">Enter</button>
+        <p id="passwordError" style="color: red;"></p>
     </div>
 
-    <div class="section">
-        <h2>📍 أماكن عايزين نزورها</h2>
-        <input type="text" id="placeInput" placeholder="اسم المكان">
-        <button onclick="addPlace()">إضافة</button>
-        <ul id="placesList"></ul>
-    </div>
+    <div id="appContent">
+        <h1>My Daughter</h1>
 
-    <div class="section">
-        <h2>❤️ ليه بحبك؟</h2>
-        <input type="text" id="loveReasonInput" placeholder="اكتب سبب حبك ليها">
-        <button onclick="addLoveReason()">إضافة</button>
-        <ul id="loveReasonsList"></ul>
-    </div>
+        <audio autoplay loop>
+            <source src="https://dl.dropboxusercontent.com/scl/fi/7ttjv1v5kx2vmyuxcqxuq/Just-The-Two-Of-Us.mp3?rlkey=ws1o34o5tcku4xv2h8ke1dpdl" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
 
-    <div class="section">
-        <h2>🎯 تحدي اليوم</h2>
-        <div id="dailyChallenge"></div>
-    </div>
+        <div class="section">
+            <h2>Love Days Counter</h2>
+            <p id="loveDays"></p>
+        </div>
 
-    <div class="section">
-        <h2>📸 ألبوم الذكريات</h2>
-        <input type="file" id="photoInput" accept="image/*">
-        <button onclick="addPhoto()">إضافة صورة</button>
-        <div class="gallery" id="photoGallery"></div>
-    </div>
+        <div class="section">
+            <h2>Love Notes</h2>
+            <textarea id="noteInput" rows="4" cols="50" placeholder="Write your love note here..."></textarea><br>
+            <button onclick="saveNote()">Save Note</button>
+            <div id="notesList"></div>
+        </div>
 
-    <audio controls autoplay loop>
-        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <div class="section">
+            <h2>Places to Visit</h2>
+            <input type="text" id="placeInput" placeholder="Add a place">
+            <button onclick="addPlace()">Add</button>
+            <ul id="placesList"></ul>
+        </div>
+
+        <div class="section">
+            <h2>Why I Love You</h2>
+            <input type="text" id="reasonInput" placeholder="Add a reason">
+            <button onclick="addReason()">Add</button>
+            <ul id="reasonsList"></ul>
+        </div>
+
+        <div class="section">
+            <h2>Daily Love Challenge</h2>
+            <p>Send me a picture with your smile today! 😊</p>
+        </div>
+
+        <div class="section">
+            <h2>Our Memories</h2>
+            <input type="file" id="memoryInput" accept="image/*" onchange="addMemory(event)">
+            <div id="memoriesList"></div>
+        </div>
+    </div>
 
     <script>
-        const startDate = new Date('2021-02-22');
-
-        function updateLoveCounter() {
-            const today = new Date();
-            const diffTime = Math.abs(today - startDate);
-            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-            document.getElementById('loveCounter').innerText = `معاك بقالنا: ${diffDays} يوم ❤️`;
-        }
-
-        updateLoveCounter();
-        setInterval(updateLoveCounter, 86400000);
-
-        function addNote() {
-            const note = document.getElementById('noteText').value;
-            const time = document.getElementById('noteTime').value;
-            if (note && time) {
-                const scheduledNotes = JSON.parse(localStorage.getItem('scheduledNotes')) || [];
-                scheduledNotes.push({ note, time });
-                localStorage.setItem('scheduledNotes', JSON.stringify(scheduledNotes));
-                showScheduledNotes();
+        function checkPassword() {
+            const password = document.getElementById('passwordInput').value;
+            if (password === 'walaa4ever') {
+                document.getElementById('passwordSection').style.display = 'none';
+                document.getElementById('appContent').style.display = 'block';
+            } else {
+                document.getElementById('passwordError').innerText = 'Incorrect Password, Try Again.';
             }
         }
 
-        function showScheduledNotes() {
-            const scheduledNotes = JSON.parse(localStorage.getItem('scheduledNotes')) || [];
-            const container = document.getElementById('scheduledNotes');
-            container.innerHTML = '';
-            const now = new Date();
+        // Love Days Counter
+        const startDate = new Date('2021-02-22');
+        const today = new Date();
+        const diffTime = Math.abs(today - startDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        document.getElementById('loveDays').innerText = `${diffDays} days since our love began.`;
 
-            scheduledNotes.forEach(noteObj => {
-                if (new Date(noteObj.time) <= now) {
-                    container.innerHTML += `<p>${noteObj.note}</p>`;
-                }
-            });
+        // Love Notes
+        function saveNote() {
+            const note = document.getElementById('noteInput').value;
+            if (note) {
+                const notesList = document.getElementById('notesList');
+                const noteElement = document.createElement('p');
+                noteElement.innerText = note;
+                notesList.appendChild(noteElement);
+                document.getElementById('noteInput').value = '';
+            }
         }
 
-        showScheduledNotes();
-        setInterval(showScheduledNotes, 60000);
-
+        // Places to Visit
         function addPlace() {
             const place = document.getElementById('placeInput').value;
             if (place) {
-                const places = JSON.parse(localStorage.getItem('places')) || [];
-                places.push(place);
-                localStorage.setItem('places', JSON.stringify(places));
-                showPlaces();
+                const placesList = document.getElementById('placesList');
+                const placeElement = document.createElement('li');
+                placeElement.innerText = place;
+                placesList.appendChild(placeElement);
+                document.getElementById('placeInput').value = '';
             }
         }
 
-        function showPlaces() {
-            const places = JSON.parse(localStorage.getItem('places')) || [];
-            const list = document.getElementById('placesList');
-            list.innerHTML = '';
-            places.forEach(place => {
-                list.innerHTML += `<li>${place}</li>`;
-            });
-        }
-
-        showPlaces();
-
-        function addLoveReason() {
-            const reason = document.getElementById('loveReasonInput').value;
+        // Why I Love You
+        function addReason() {
+            const reason = document.getElementById('reasonInput').value;
             if (reason) {
-                const reasons = JSON.parse(localStorage.getItem('loveReasons')) || [];
-                reasons.push(reason);
-                localStorage.setItem('loveReasons', JSON.stringify(reasons));
-                showLoveReasons();
+                const reasonsList = document.getElementById('reasonsList');
+                const reasonElement = document.createElement('li');
+                reasonElement.innerText = reason;
+                reasonsList.appendChild(reasonElement);
+                document.getElementById('reasonInput').value = '';
             }
         }
 
-        function showLoveReasons() {
-            const reasons = JSON.parse(localStorage.getItem('loveReasons')) || [];
-            const list = document.getElementById('loveReasonsList');
-            list.innerHTML = '';
-            reasons.forEach(reason => {
-                list.innerHTML += `<li>${reason}</li>`;
-            });
-        }
-
-        showLoveReasons();
-
-        const challenges = [
-            'ابعتلي صورة وأنت مبتسم النهارده',
-            'اكتبلي حاجة نفسك تعملها معايا',
-            'ابعتلي أغنية بتحب تسمعها معايا',
-            'ابعتلي ذكرى جميلة من يوم عرفتنا',
-            'قوللي أكتر حاجة بتحبها فيا'
-        ];
-
-        function showDailyChallenge() {
-            const index = new Date().getDate() % challenges.length;
-            document.getElementById('dailyChallenge').innerText = challenges[index];
-        }
-
-        showDailyChallenge();
-
-        function addPhoto() {
-            const input = document.getElementById('photoInput');
-            const file = input.files[0];
+        // Memories Gallery
+        function addMemory(event) {
+            const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function (e) {
-                    const photos = JSON.parse(localStorage.getItem('photos')) || [];
-                    photos.push(e.target.result);
-                    localStorage.setItem('photos', JSON.stringify(photos));
-                    showPhotos();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.width = '100px';
+                    img.style.margin = '10px';
+                    document.getElementById('memoriesList').appendChild(img);
                 }
                 reader.readAsDataURL(file);
             }
         }
-
-        function showPhotos() {
-            const photos = JSON.parse(localStorage.getItem('photos')) || [];
-            const gallery = document.getElementById('photoGallery');
-            gallery.innerHTML = '';
-            photos.forEach(photo => {
-                gallery.innerHTML += `<img src="${photo}">`;
-            });
-        }
-
-        showPhotos();
     </script>
 </body>
 
